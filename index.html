@@ -1,216 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FAKE PAYMENT SCREENSHOT</title>
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Original Text Screenshot Editor</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+    box-sizing:border-box;
+}
 
 body{
     margin:0;
-    background:#0d0f13;
-    color:#fff;
     font-family:Arial,sans-serif;
+    background:#111;
+    color:#fff;
 }
 
 header{
-    height:64px;
-    background:#171a20;
-    border-bottom:1px solid #292d35;
+    padding:18px;
+    text-align:center;
+    background:#181818;
+    border-bottom:1px solid #333;
+}
+
+header h2{
+    margin:0 0 6px;
+}
+
+header p{
+    margin:0;
+    color:#aaa;
+    font-size:14px;
+}
+
+.toolbar{
+    padding:15px;
+    background:#1c1c1c;
     display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 18px;
-}
-
-.logo{
-    font-size:20px;
-    font-weight:bold;
-}
-
-.logo span{
-    color:#756aff;
-}
-
-button{
-    cursor:pointer;
-    border:0;
-}
-
-.export{
-    background:#756aff;
-    color:#fff;
-    padding:10px 18px;
-    border-radius:8px;
-    font-weight:bold;
-}
-
-.layout{
-    display:grid;
-    grid-template-columns:270px 1fr 320px;
-    min-height:calc(100vh - 64px);
-}
-
-.panel{
-    background:#171a20;
-    padding:17px;
-    overflow:auto;
-}
-
-.left{
-    border-right:1px solid #292d35;
-}
-
-.right{
-    border-left:1px solid #292d35;
-}
-
-.center{
-    background:#0a0c10;
-    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
     align-items:center;
     justify-content:center;
-    padding:25px;
 }
 
-.upload{
-    border:2px dashed #414650;
-    border-radius:12px;
-    padding:28px 10px;
-    text-align:center;
-    cursor:pointer;
-    color:#aaa;
-}
-
-.upload:hover{
-    border-color:#756aff;
+button,
+label{
+    background:#2563eb;
     color:white;
+    border:0;
+    border-radius:8px;
+    padding:11px 16px;
+    cursor:pointer;
+    font-size:14px;
 }
 
-.upload input{
+button:hover,
+label:hover{
+    background:#1d4ed8;
+}
+
+input[type=file]{
     display:none;
 }
 
-.icon{
-    font-size:42px;
-    margin-bottom:10px;
+.workspace{
+    padding:20px;
+    overflow:auto;
+    text-align:center;
 }
 
-.tool{
-    width:100%;
-    padding:11px;
-    margin-top:8px;
-    border-radius:8px;
-    background:#252932;
-    border:1px solid #343943;
-    color:white;
-}
-
-.tool:hover{
-    background:#30343e;
-}
-
-.title{
-    font-size:14px;
-    font-weight:bold;
-    margin-bottom:12px;
+#canvas{
+    display:inline-block;
+    max-width:100%;
+    height:auto;
+    background:#fff;
+    box-shadow:0 0 25px rgba(0,0,0,.5);
 }
 
 .status{
-    color:#999;
-    font-size:12px;
-    margin-top:10px;
-}
-
-.progress{
-    height:6px;
-    background:#292d35;
-    border-radius:20px;
-    overflow:hidden;
-    margin-top:10px;
-    display:none;
-}
-
-.bar{
-    height:100%;
-    width:0;
-    background:#756aff;
-}
-
-.canvasBox{
-    max-width:100%;
-    max-height:85vh;
-}
-
-canvas{
-    display:block;
-    max-width:100%;
-    max-height:82vh;
-    box-shadow:0 15px 50px rgba(0,0,0,.5);
-}
-
-.textItem{
-    padding:11px;
-    margin-bottom:7px;
-    background:#242831;
-    border:1px solid #363b45;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-.textItem:hover,
-.textItem.active{
-    border-color:#756aff;
-}
-
-.preview{
-    font-size:13px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-textarea{
-    width:100%;
-    min-height:80px;
-    background:#242831;
-    color:#fff;
-    border:1px solid #383d48;
-    border-radius:7px;
-    padding:10px;
-    resize:vertical;
-}
-
-.info{
-    color:#777;
-    font-size:12px;
-    line-height:1.6;
-}
-
-.empty{
+    padding:12px;
     text-align:center;
-    color:#666;
+    color:#aaa;
 }
 
-@media(max-width:950px){
+.editor{
+    display:none;
+    position:fixed;
+    left:50%;
+    bottom:20px;
+    transform:translateX(-50%);
+    width:min(600px,94%);
+    background:#202020;
+    padding:15px;
+    border-radius:14px;
+    box-shadow:0 10px 40px #000;
+    z-index:20;
+}
 
-    .layout{
-        grid-template-columns:1fr;
-    }
+.editor input{
+    width:100%;
+    padding:13px;
+    border:1px solid #444;
+    border-radius:8px;
+    background:#111;
+    color:#fff;
+    font-size:18px;
+    outline:none;
+}
 
-    .left,
-    .right{
-        border:0;
-        border-bottom:1px solid #292d35;
-    }
+.editor-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
 
-    .center{
-        min-height:500px;
-    }
+.editor-buttons button{
+    flex:1;
+}
+
+#cancel{
+    background:#444;
+}
+
+#saveText{
+    background:#16a34a;
+}
+
+.instructions{
+    max-width:800px;
+    margin:10px auto;
+    color:#aaa;
+    font-size:13px;
+    line-height:1.7;
 }
 </style>
 </head>
@@ -218,784 +140,685 @@ textarea{
 <body>
 
 <header>
-
-<div class="logo">
-<span>EXACT</span> TEXT EDITOR
-</div>
-
-<button class="export" onclick="downloadImage()">
-⬇ Save Image
-</button>
-
+    <h2>Original Text Screenshot Editor</h2>
+    <p>صرف text تبدیل کریں — تصویر کا باقی حصہ برقرار رہے</p>
 </header>
 
+<div class="toolbar">
 
-<div class="layout">
+    <label for="imageInput">
+        📷 Screenshot منتخب کریں
+    </label>
 
+    <input
+        id="imageInput"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+    >
 
-<!-- LEFT -->
+    <button id="detectBtn">
+        🔍 Text Detect کریں
+    </button>
 
-<aside class="panel left">
+    <button id="downloadBtn">
+        ⬇️ Download
+    </button>
 
-<div class="title">
-IMAGE
 </div>
 
-<label class="upload">
-
-<input
-type="file"
-id="imageInput"
-accept="image/*"
->
-
-<div class="icon">🖼️</div>
-
-<div>
-Upload Image
+<div class="status" id="status">
+    پہلے screenshot منتخب کریں۔
 </div>
 
-<div style="font-size:11px;margin-top:5px">
-Only existing text will be detected
+<div class="workspace">
+    <canvas id="canvas"></canvas>
 </div>
 
-</label>
-
-
-<br>
-
-
-<div class="title">
-DETECT
+<div class="instructions">
+    Text detect ہونے کے بعد تصویر میں کسی detected text پر click کریں۔
+    پھر صرف نیا text لکھیں اور Save کریں۔
 </div>
 
-<button
-class="tool"
-onclick="detectText()"
->
-🔍 Detect Existing Text
-</button>
+<div class="editor" id="editor">
 
+    <input
+        id="textInput"
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+    >
 
-<div
-class="progress"
-id="progress"
->
+    <div class="editor-buttons">
+        <button id="cancel">
+            Cancel
+        </button>
 
-<div
-class="bar"
-id="bar"
-></div>
+        <button id="saveText">
+            Save Text
+        </button>
+    </div>
 
 </div>
 
 
-<div
-class="status"
-id="status"
->
-Upload an image first.
-</div>
+<!-- OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
-
-<br>
-
-
-<div class="title">
-EDIT
-</div>
-
-<div class="info">
-
-صرف پہلے سے موجود Text کو edit کریں۔<br><br>
-
-نیا Text خود سے add نہیں ہوگا۔<br><br>
-
-Image کا باقی حصہ original رہے گا۔
-
-</div>
-
-</aside>
-
-
-
-<!-- CENTER -->
-
-<main class="center">
-
-<div
-class="empty"
-id="empty"
->
-
-<div>
-
-<div style="font-size:55px">
-🖼️
-</div>
-
-<h2>
-Upload Image
-</h2>
-
-<p>
-Detect the existing text to edit it.
-</p>
-
-</div>
-
-</div>
-
-
-<div
-class="canvasBox"
-id="canvasBox"
-style="display:none"
->
-
-<canvas id="canvas"></canvas>
-
-</div>
-
-</main>
-
-
-
-<!-- RIGHT -->
-
-<aside class="panel right">
-
-<div class="title">
-EXISTING TEXT
-</div>
-
-<div id="textList">
-
-<div class="info">
-No text detected.
-</div>
-
-</div>
-
-
-<div
-id="editor"
-style="display:none;margin-top:20px"
->
-
-<div class="title">
-EDIT ONLY
-</div>
-
-<div class="info" style="margin-bottom:10px">
-
-Font / style / position کو manually change نہیں کیا جائے گا۔
-
-</div>
-
-
-<textarea
-id="newText"
-placeholder="Replace selected text..."
-></textarea>
-
-
-<button
-class="tool"
-onclick="applyChange()"
->
-✓ Apply Text Change
-</button>
-
-
-<button
-class="tool"
-onclick="restoreOriginal()"
->
-↩ Restore Original
-</button>
-
-</div>
-
-</aside>
-
-</div>
-
+<!-- OpenCV: صرف text کے پرانے pixels صاف کرنے کے لیے -->
+<script async src="https://docs.opencv.org/4.x/opencv.js"></script>
 
 
 <script>
 
-const canvas =
-document.getElementById("canvas");
+const imageInput = document.getElementById("imageInput");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", {
+    willReadFrequently:true
+});
 
-const ctx =
-canvas.getContext("2d");
+const statusBox = document.getElementById("status");
+const detectBtn = document.getElementById("detectBtn");
+const downloadBtn = document.getElementById("downloadBtn");
 
-const imageInput =
-document.getElementById("imageInput");
+const editor = document.getElementById("editor");
+const textInput = document.getElementById("textInput");
+const saveText = document.getElementById("saveText");
+const cancel = document.getElementById("cancel");
 
-let img =
-new Image();
-
-let loaded=false;
-
-let detected=[];
-
-let selected=null;
-
-let originalImageData=null;
+let originalImage = null;
+let detectedWords = [];
+let selectedWord = null;
 
 
 /*
-IMAGE UPLOAD
+    IMPORTANT
+
+    تصویر ہمیشہ اس کی ORIGINAL / NATIVE resolution
+    میں canvas پر load ہوگی۔
+
+    CSS صرف screen پر اسے چھوٹا دکھا سکتا ہے۔
+    اصل canvas resolution تبدیل نہیں ہوگی۔
 */
 
-imageInput.addEventListener("change",e=>{
+imageInput.addEventListener("change", function(e){
 
-    const file=e.target.files[0];
+    const file = e.target.files[0];
 
-    if(!file)return;
+    if(!file) return;
 
-    const reader=new FileReader();
+    const reader = new FileReader();
 
-    reader.onload=function(ev){
+    reader.onload = function(event){
 
-        img.onload=function(){
+        const img = new Image();
 
-            loaded=true;
+        img.onload = function(){
 
-            canvas.width=img.naturalWidth;
+            originalImage = img;
 
-            canvas.height=img.naturalHeight;
+            /*
+                یہاں کوئی resize نہیں۔
+                اصل width اور height ہی استعمال ہوں گے۔
+            */
 
-            ctx.drawImage(
-                img,
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+
+            ctx.clearRect(
                 0,
                 0,
                 canvas.width,
                 canvas.height
             );
 
-            originalImageData=
-                ctx.getImageData(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                img.naturalWidth,
+                img.naturalHeight
+            );
 
-            document.getElementById("empty")
-                .style.display="none";
+            detectedWords = [];
 
-            document.getElementById("canvasBox")
-                .style.display="block";
-
-            detected=[];
-            selected=null;
-
-            updateList();
-
-            document.getElementById("status")
-                .innerText=
-                "Image loaded.";
-
+            statusBox.textContent =
+                "Screenshot تیار ہے۔ اب Text Detect کریں۔";
         };
 
-        img.src=ev.target.result;
-
+        img.src = event.target.result;
     };
 
     reader.readAsDataURL(file);
-
 });
 
 
 /*
-OCR
+    OCR
 */
 
-async function detectText(){
+detectBtn.addEventListener("click", async function(){
 
-    if(!loaded){
+    if(!originalImage){
 
-        alert("Please upload an image first.");
-
+        alert("پہلے screenshot منتخب کریں۔");
         return;
     }
 
-    const progress=
-        document.getElementById("progress");
+    statusBox.textContent =
+        "Text detect ہو رہا ہے، تھوڑا انتظار کریں...";
 
-    const bar=
-        document.getElementById("bar");
-
-    const status=
-        document.getElementById("status");
-
-    progress.style.display="block";
-
-    bar.style.width="0%";
-
-    status.innerText="Detecting text...";
-
+    detectBtn.disabled = true;
 
     try{
 
-        const result=
-            await Tesseract.recognize(
-                img.src,
-                "eng",
-                {
-                    logger:m=>{
+        const result = await Tesseract.recognize(
+            canvas,
+            "eng",
+            {
+                logger: function(info){
 
-                        if(m.progress){
+                    if(info.status){
 
-                            bar.style.width=
-                                Math.round(
-                                    m.progress*100
-                                )+"%";
+                        let percent =
+                            Math.round(
+                                (info.progress || 0) * 100
+                            );
 
-                        }
-
-                        if(m.status){
-
-                            status.innerText=
-                                m.status;
-
-                        }
-
+                        statusBox.textContent =
+                            info.status +
+                            " " +
+                            percent +
+                            "%";
                     }
                 }
-            );
-
-
-        detected=[];
-
-
-        /*
-        WORD LEVEL DETECTION
-        */
-
-        result.data.words.forEach(
-            (word,index)=>{
-
-                const value=
-                    word.text.trim();
-
-                if(!value)return;
-
-                if(
-                    !word.bbox ||
-                    word.confidence < 20
-                )return;
-
-
-                detected.push({
-
-                    id:index,
-
-                    original:value,
-
-                    text:value,
-
-                    x:word.bbox.x0,
-
-                    y:word.bbox.y0,
-
-                    w:
-                        word.bbox.x1 -
-                        word.bbox.x0,
-
-                    h:
-                        word.bbox.y1 -
-                        word.bbox.y0,
-
-                    changed:false
-
-                });
-
             }
         );
 
+        detectedWords = [];
 
-        status.innerText=
-            detected.length+
-            " existing text items found.";
+        /*
+            صرف meaningful words رکھیں
+        */
 
-        updateList();
+        if(result.data.words){
 
-        redraw();
+            result.data.words.forEach(function(word){
 
+                const text =
+                    (word.text || "").trim();
+
+                if(!text) return;
+
+                if(!word.bbox) return;
+
+                detectedWords.push({
+
+                    text:text,
+
+                    x:word.bbox.x0,
+                    y:word.bbox.y0,
+
+                    width:
+                        word.bbox.x1 -
+                        word.bbox.x0,
+
+                    height:
+                        word.bbox.y1 -
+                        word.bbox.y0
+                });
+            });
+        }
+
+        statusBox.textContent =
+            detectedWords.length +
+            " text areas detect ہو گئے۔ کسی text پر click کریں۔";
+
+        drawDetectionBoxes();
+
+    }catch(error){
+
+        console.error(error);
+
+        statusBox.textContent =
+            "Text detection میں مسئلہ آیا۔";
     }
-    catch(err){
 
-        console.error(err);
-
-        status.innerText=
-            "Could not detect text.";
-
-    }
-
-}
+    detectBtn.disabled = false;
+});
 
 
 /*
-LIST
+    Detection boxes دکھانا
 */
 
-function updateList(){
+function drawDetectionBoxes(){
 
-    const list=
-        document.getElementById("textList");
-
-    list.innerHTML="";
-
-
-    if(!detected.length){
-
-        list.innerHTML=
-            '<div class="info">No text detected.</div>';
-
-        return;
-
-    }
-
-
-    detected.forEach(t=>{
-
-        const item=
-            document.createElement("div");
-
-        item.className="textItem";
-
-        if(t===selected)
-            item.classList.add("active");
-
-
-        item.innerHTML=
-            `<div class="preview">
-                ${escapeHTML(t.text)}
-            </div>
-
-            <div class="info">
-                Original: ${escapeHTML(t.original)}
-            </div>`;
-
-
-        item.onclick=function(){
-
-            selected=t;
-
-            document.getElementById("editor")
-                .style.display="block";
-
-            document.getElementById("newText")
-                .value=t.text;
-
-            updateList();
-
-            redraw();
-
-        };
-
-
-        list.appendChild(item);
-
-    });
-
-}
-
-
-/*
-APPLY ONLY TEXT
-*/
-
-function applyChange(){
-
-    if(!selected)
-        return;
-
-
-    const value=
-        document.getElementById("newText")
-            .value.trim();
-
-
-    if(!value)
-        return;
-
-
-    selected.text=value;
-
-    selected.changed=true;
-
-    redraw();
-
-    updateList();
-
-}
-
-
-/*
-RESTORE
-*/
-
-function restoreOriginal(){
-
-    if(!selected)
-        return;
-
-    selected.text=
-        selected.original;
-
-    selected.changed=false;
-
-    document.getElementById("newText")
-        .value=selected.original;
-
-    redraw();
-
-    updateList();
-
-}
-
-
-/*
-IMPORTANT:
-BACKGROUND RESTORATION
-
-Original pixels outside detected
-text boxes are kept untouched.
-*/
-
-function redraw(){
-
-    if(!loaded)return;
-
+    if(!originalImage) return;
 
     /*
-    Restore original image
+        پہلے ORIGINAL image دوبارہ draw کریں۔
+        اس سے صرف temporary boxes ختم ہوتے ہیں۔
     */
 
-    ctx.putImageData(
-        originalImageData,
+    ctx.clearRect(
         0,
-        0
+        0,
+        canvas.width,
+        canvas.height
     );
 
-
-    detected.forEach(t=>{
-
-        /*
-        اگر text change نہیں ہوا
-        تو original pixels کو touch نہ کریں
-        */
-
-        if(
-            !t.changed ||
-            t.text===t.original
-        ){
-
-            return;
-
-        }
-
-
-        /*
-        Background reconstruction
-
-        detected box کے اندر
-        surrounding pixels سے
-        approximate background بنایا جاتا ہے.
-        */
-
-        reconstructBackground(t);
-
-
-        /*
-        Original approximate
-        text style
-        */
-
-        ctx.save();
-
-        const fontSize=
-            Math.max(
-                10,
-                Math.floor(t.h*0.85)
-            );
-
-
-        /*
-        OCR کے box کے حساب سے
-        font size برقرار رکھنے کی کوشش
-        */
-
-        ctx.font=
-            fontSize+
-            "px Arial";
-
-        ctx.textBaseline="top";
-
-        ctx.textAlign="left";
-
-
-        /*
-        Width fit
-        */
-
-        let size=fontSize;
-
-        ctx.font=
-            size+
-            "px Arial";
-
-
-        while(
-            ctx.measureText(t.text).width >
-            t.w &&
-            size>6
-        ){
-
-            size--;
-
-            ctx.font=
-                size+
-                "px Arial";
-
-        }
-
-
-        /*
-        Draw replacement
-        */
-
-        ctx.fillStyle=
-            estimateTextColor(t);
-
-
-        ctx.fillText(
-            t.text,
-            t.x,
-            t.y
-        );
-
-
-        ctx.restore();
-
-    });
-
-}
-
-
-/*
-BACKGROUND
-
-Only changed text rectangle is modified.
-*/
-
-function reconstructBackground(t){
-
-    const pad=2;
-
-    const x=
-        Math.max(
-            0,
-            Math.floor(t.x-pad)
-        );
-
-    const y=
-        Math.max(
-            0,
-            Math.floor(t.y-pad)
-        );
-
-    const w=
-        Math.min(
-            canvas.width-x,
-            Math.ceil(t.w+pad*2)
-        );
-
-    const h=
-        Math.min(
-            canvas.height-y,
-            Math.ceil(t.h+pad*2)
-        );
-
+    ctx.drawImage(
+        originalImage,
+        0,
+        0,
+        originalImage.naturalWidth,
+        originalImage.naturalHeight
+    );
 
     /*
-    Sample pixels around the text.
+        Detection boxes
     */
-
-    const top=
-        ctx.getImageData(
-            x,
-            Math.max(0,y-3),
-            w,
-            3
-        );
-
-    const bottom=
-        ctx.getImageData(
-            x,
-            Math.min(
-                canvas.height-3,
-                y+h
-            ),
-            w,
-            3
-        );
-
-
-    /*
-    Average background color
-    */
-
-    let r=0,g=0,b=0,count=0;
-
-
-    for(
-        let i=0;
-        i<top.data.length;
-        i+=4
-    ){
-
-        r+=top.data[i];
-        g+=top.data[i+1];
-        b+=top.data[i+2];
-
-        count++;
-
-    }
-
-
-    for(
-        let i=0;
-        i<bottom.data.length;
-        i+=4
-    ){
-
-        r+=bottom.data[i];
-        g+=bottom.data[i+1];
-        b+=bottom.data[i+2];
-
-        count++;
-
-    }
-
-
-    if(!count)return;
-
-
-    r=Math.round(r/count);
-    g=Math.round(g/count);
-    b=Math.round(b/count);
-
 
     ctx.save();
 
-    ctx.fillStyle=
-        `rgb(${r},${g},${b})`;
+    ctx.lineWidth = 2;
+
+    detectedWords.forEach(function(word){
+
+        ctx.strokeStyle =
+            "rgba(0,120,255,.8)";
+
+        ctx.strokeRect(
+            word.x,
+            word.y,
+            word.width,
+            word.height
+        );
+
+    });
+
+    ctx.restore();
+}
+
+
+/*
+    Canvas click
+*/
+
+canvas.addEventListener("click", function(e){
+
+    if(!detectedWords.length) return;
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    /*
+        Canvas کی اصل resolution اور screen
+        resolution مختلف ہو سکتی ہے۔
+
+        اس لیے click coordinates کو native
+        canvas coordinates میں convert کریں۔
+    */
+
+    const scaleX =
+        canvas.width / rect.width;
+
+    const scaleY =
+        canvas.height / rect.height;
+
+    const x =
+        (e.clientX - rect.left) * scaleX;
+
+    const y =
+        (e.clientY - rect.top) * scaleY;
+
+
+    let found = null;
+
+    for(let i = 0; i < detectedWords.length; i++){
+
+        const word = detectedWords[i];
+
+        if(
+            x >= word.x &&
+            x <= word.x + word.width &&
+            y >= word.y &&
+            y <= word.y + word.height
+        ){
+
+            found = word;
+            break;
+        }
+    }
+
+    if(!found) return;
+
+    selectedWord = found;
+
+    textInput.value =
+        found.text;
+
+    editor.style.display =
+        "block";
+
+    textInput.focus();
+
+    textInput.select();
+});
+
+
+/*
+    Cancel
+*/
+
+cancel.addEventListener("click", function(){
+
+    editor.style.display =
+        "none";
+
+    selectedWord = null;
+
+    drawDetectionBoxes();
+});
+
+
+/*
+    Save replacement
+*/
+
+saveText.addEventListener("click", async function(){
+
+    if(!selectedWord) return;
+
+    const newText =
+        textInput.value;
+
+    if(!newText.trim()){
+
+        alert("Text خالی نہیں ہو سکتا۔");
+        return;
+    }
+
+    editor.style.display =
+        "none";
+
+    statusBox.textContent =
+        "Text replace ہو رہا ہے...";
+
+    /*
+        Old text region کی copy محفوظ کریں
+    */
+
+    const box = {
+
+        x:selectedWord.x,
+        y:selectedWord.y,
+
+        width:selectedWord.width,
+        height:selectedWord.height
+    };
+
+
+    /*
+        پہلے old text کو background سے remove
+        کرنے کی کوشش۔
+
+        OpenCV available ہو تو inpainting استعمال ہوگی۔
+    */
+
+    await removeOldText(box);
+
+
+    /*
+        New text کو اسی area میں fit کریں۔
+
+        اصل image resize نہیں ہوتی۔
+        صرف اسی text region پر replacement ہوتا ہے۔
+    */
+
+    drawReplacementText(
+        newText,
+        box
+    );
+
+
+    selectedWord.text =
+        newText;
+
+    statusBox.textContent =
+        "Text replace ہو گیا۔";
+
+    selectedWord = null;
+});
+
+
+/*
+    Old text remove
+*/
+
+async function removeOldText(box){
+
+    /*
+        اگر OpenCV ابھی load نہیں ہوئی
+        تو local background estimation استعمال کریں۔
+    */
+
+    if(
+        typeof cv === "undefined" ||
+        !cv.Mat
+    ){
+
+        simpleBackgroundFill(box);
+        return;
+    }
+
+    try{
+
+        const src =
+            cv.imread(canvas);
+
+        const mask =
+            new cv.Mat.zeros(
+                canvas.height,
+                canvas.width,
+                cv.CV_8UC1
+            );
+
+        /*
+            text کے اردگرد تھوڑا margin
+        */
+
+        const margin = Math.max(
+            2,
+            Math.round(box.height * 0.12)
+        );
+
+        const x =
+            Math.max(
+                0,
+                Math.floor(box.x - margin)
+            );
+
+        const y =
+            Math.max(
+                0,
+                Math.floor(box.y - margin)
+            );
+
+        const w =
+            Math.min(
+                canvas.width - x,
+                Math.ceil(box.width + margin * 2)
+            );
+
+        const h =
+            Math.min(
+                canvas.height - y,
+                Math.ceil(box.height + margin * 2)
+            );
+
+        cv.rectangle(
+            mask,
+            new cv.Point(x,y),
+            new cv.Point(x+w,y+h),
+            new cv.Scalar(255),
+            -1
+        );
+
+        const dst =
+            new cv.Mat();
+
+        /*
+            Telea inpainting
+        */
+
+        cv.inpaint(
+            src,
+            mask,
+            dst,
+            Math.max(2, box.height * 0.25),
+            cv.INPAINT_TELEA
+        );
+
+        cv.imshow(
+            canvas,
+            dst
+        );
+
+        src.delete();
+        mask.delete();
+        dst.delete();
+
+    }catch(error){
+
+        console.warn(
+            "OpenCV inpaint failed:",
+            error
+        );
+
+        simpleBackgroundFill(box);
+    }
+}
+
+
+/*
+    Flat/simple background کے لیے fallback
+*/
+
+function simpleBackgroundFill(box){
+
+    const pad = 2;
+
+    const x =
+        Math.max(
+            0,
+            Math.floor(box.x - pad)
+        );
+
+    const y =
+        Math.max(
+            0,
+            Math.floor(box.y - pad)
+        );
+
+    const w =
+        Math.min(
+            canvas.width - x,
+            Math.ceil(box.width + pad * 2)
+        );
+
+    const h =
+        Math.min(
+            canvas.height - y,
+            Math.ceil(box.height + pad * 2)
+        );
+
+
+    /*
+        چاروں sides سے pixels sample کریں
+    */
+
+    const samples = [];
+
+    function addSample(px,py){
+
+        if(
+            px < 0 ||
+            py < 0 ||
+            px >= canvas.width ||
+            py >= canvas.height
+        ) return;
+
+        const data =
+            ctx.getImageData(
+                px,
+                py,
+                1,
+                1
+            ).data;
+
+        samples.push([
+            data[0],
+            data[1],
+            data[2],
+            data[3]
+        ]);
+    }
+
+
+    for(let i=0;i<10;i++){
+
+        addSample(
+            x - 2,
+            y + Math.floor(
+                h * i / 10
+            )
+        );
+
+        addSample(
+            x + w + 2,
+            y + Math.floor(
+                h * i / 10
+            )
+        );
+
+        addSample(
+            x + Math.floor(
+                w * i / 10
+            ),
+            y - 2
+        );
+
+        addSample(
+            x + Math.floor(
+                w * i / 10
+            ),
+            y + h + 2
+        );
+    }
+
+
+    if(!samples.length) return;
+
+
+    let r=0,g=0,b=0,a=0;
+
+    samples.forEach(function(c){
+
+        r += c[0];
+        g += c[1];
+        b += c[2];
+        a += c[3];
+    });
+
+    r = Math.round(r/samples.length);
+    g = Math.round(g/samples.length);
+    b = Math.round(b/samples.length);
+    a = Math.round(a/samples.length);
+
+
+    ctx.fillStyle =
+        `rgba(${r},${g},${b},${a/255})`;
 
     ctx.fillRect(
         x,
@@ -1003,150 +826,251 @@ function reconstructBackground(t){
         w,
         h
     );
-
-    ctx.restore();
-
 }
 
 
 /*
-Estimate text color
+    Replacement text
+
+    یہاں image کا size یا position تبدیل نہیں ہوتا۔
+
+    Text کو original bounding box کے اندر fit کیا جاتا ہے۔
 */
 
-function estimateTextColor(t){
+function drawReplacementText(text,box){
 
-    const data=
-        originalImageData.data;
+    ctx.save();
 
-    let r=0;
-    let g=0;
-    let b=0;
+    /*
+        پہلے original text box کی estimated
+        typography سے قریب ترین font size
+        نکالیں۔
+    */
 
-    let count=0;
+    let fontSize =
+        Math.max(
+            8,
+            Math.floor(
+                box.height * 0.82
+            )
+        );
 
 
     /*
-    Sample darkest pixels
+        Default font fallback ہے۔
+        Browser screenshot سے اصل font-file
+        recover نہیں کر سکتا۔
     */
 
-    for(
-        let yy=Math.floor(t.y);
-        yy<
-        Math.min(
-            canvas.height,
-            Math.floor(t.y+t.h)
-        );
-        yy++
-    ){
+    ctx.textBaseline =
+        "middle";
 
-        for(
-            let xx=Math.floor(t.x);
-            xx<
-            Math.min(
-                canvas.width,
-                Math.floor(t.x+t.w)
-            );
-            xx++
+    ctx.textAlign =
+        "left";
+
+    /*
+        اگر replacement چھوٹا/بڑا ہو تو font-size
+        کو box کے اندر fit کریں۔
+    */
+
+    while(fontSize > 4){
+
+        ctx.font =
+            `${fontSize}px Arial`;
+
+        const metrics =
+            ctx.measureText(text);
+
+        if(
+            metrics.width <=
+            box.width * 1.02
         ){
-
-            const index=
-                (yy*canvas.width+xx)*4;
-
-            const rr=data[index];
-            const gg=data[index+1];
-            const bb=data[index+2];
-
-
-            if(
-                rr<100 &&
-                gg<100 &&
-                bb<100
-            ){
-
-                r+=rr;
-                g+=gg;
-                b+=bb;
-
-                count++;
-
-            }
-
+            break;
         }
 
+        fontSize--;
     }
 
 
-    if(!count)
-        return "#ffffff";
+    /*
+        Center vertically
+    */
+
+    const metrics =
+        ctx.measureText(text);
+
+    const textWidth =
+        metrics.width;
+
+    const drawX =
+        box.x +
+        Math.max(
+            0,
+            (box.width - textWidth) / 2
+        );
+
+    const drawY =
+        box.y +
+        box.height / 2;
 
 
-    return `rgb(
-        ${Math.round(r/count)},
-        ${Math.round(g/count)},
-        ${Math.round(b/count)}
-    )`;
+    /*
+        Color surrounding pixels سے estimate
+    */
 
+    const color =
+        estimateTextColor(box);
+
+
+    ctx.fillStyle =
+        color;
+
+
+    ctx.fillText(
+        text,
+        drawX,
+        drawY
+    );
+
+    ctx.restore();
 }
 
 
 /*
-DOWNLOAD
+    Text color estimate
 */
 
-function downloadImage(){
+function estimateTextColor(box){
 
-    if(!loaded){
+    const x =
+        Math.max(
+            0,
+            Math.floor(box.x)
+        );
 
-        alert("Upload an image first.");
+    const y =
+        Math.max(
+            0,
+            Math.floor(box.y)
+        );
 
-        return;
+    const w =
+        Math.min(
+            canvas.width-x,
+            Math.max(1,Math.floor(box.width))
+        );
 
+    const h =
+        Math.min(
+            canvas.height-y,
+            Math.max(1,Math.floor(box.height))
+        );
+
+
+    const data =
+        ctx.getImageData(
+            x,
+            y,
+            w,
+            h
+        ).data;
+
+
+    let dark = 0;
+    let total = 0;
+
+
+    for(let i=0;i<data.length;i+=4){
+
+        const r=data[i];
+        const g=data[i+1];
+        const b=data[i+2];
+
+        const brightness =
+            (r+g+b)/3;
+
+        if(brightness < 120){
+
+            dark += brightness;
+            total++;
+        }
     }
 
 
-    const old=selected;
+    if(total === 0){
 
-    selected=null;
+        return "#000";
+    }
 
-    redraw();
+
+    const avg =
+        dark/total;
+
+    const v =
+        Math.max(
+            0,
+            Math.min(
+                255,
+                Math.round(avg)
+            )
+        );
+
+    return `rgb(${v},${v},${v})`;
+}
 
 
-    const link=
+/*
+    Download
+
+    ہمیشہ canvas کی ORIGINAL resolution میں۔
+*/
+
+downloadBtn.addEventListener("click", function(){
+
+    if(!originalImage){
+
+        alert("پہلے screenshot منتخب کریں۔");
+        return;
+    }
+
+    const link =
         document.createElement("a");
 
-    link.download=
-        "edited-image.png";
+    link.download =
+        "edited-screenshot.png";
 
-    link.href=
+    link.href =
         canvas.toDataURL(
             "image/png"
         );
 
     link.click();
-
-
-    selected=old;
-
-    redraw();
-
-}
+});
 
 
 /*
-ESCAPE
+    Escape = close editor
 */
 
-function escapeHTML(str){
+document.addEventListener(
+    "keydown",
+    function(e){
 
-    return String(str)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;");
+        if(e.key === "Escape"){
 
-}
+            editor.style.display =
+                "none";
+
+            selectedWord = null;
+
+            if(originalImage){
+                drawDetectionBoxes();
+            }
+        }
+    }
+);
 
 </script>
 
 </body>
-  </html>
+</html>
