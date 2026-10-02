@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FAKE PAYMENT SCREENSHOT</title>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#0d0f13;
+    color:#fff;
+    font-family:Arial,sans-serif;
+}
+
+header{
+    height:64px;
+    background:#171a20;
+    border-bottom:1px solid #292d35;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#756aff;
+}
+
+button{
+    cursor:pointer;
+    border:0;
+}
+
+.export{
+    background:#756aff;
+    color:#fff;
+    padding:10px 18px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.layout{
+    display:grid;
+    grid-template-columns:270px 1fr 320px;
+    min-height:calc(100vh - 64px);
+}
+
+.panel{
+    background:#171a20;
+    padding:17px;
+    overflow:auto;
+}
+
+.left{
+    border-right:1px solid #292d35;
+}
+
+.right{
+    border-left:1px solid #292d35;
+}
+
+.center{
+    background:#0a0c10;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+.upload{
+    border:2px dashed #414650;
+    border-radius:12px;
+    padding:28px 10px;
+    text-align:center;
+    cursor:pointer;
+    color:#aaa;
+}
+
+.upload:hover{
+    border-color:#756aff;
+    color:white;
+}
+
+.upload input{
+    display:none;
+}
+
+.icon{
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.tool{
+    width:100%;
+    padding:11px;
+    margin-top:8px;
+    border-radius:8px;
+    background:#252932;
+    border:1px solid #343943;
+    color:white;
+}
+
+.tool:hover{
+    background:#30343e;
+}
+
+.title{
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+
+.status{
+    color:#999;
+    font-size:12px;
+    margin-top:10px;
+}
+
+.progress{
+    height:6px;
+    background:#292d35;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:10px;
+    display:none;
+}
+
+.bar{
+    height:100%;
+    width:0;
+    background:#756aff;
+}
+
+.canvasBox{
+    max-width:100%;
+    max-height:85vh;
+}
+
+canvas{
+    display:block;
+    max-width:100%;
+    max-height:82vh;
+    box-shadow:0 15px 50px rgba(0,0,0,.5);
+}
+
+.textItem{
+    padding:11px;
+    margin-bottom:7px;
+    background:#242831;
+    border:1px solid #363b45;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.textItem:hover,
+.textItem.active{
+    border-color:#756aff;
+}
+
+.preview{
+    font-size:13px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+textarea{
+    width:100%;
+    min-height:80px;
+    background:#242831;
+    color:#fff;
+    border:1px solid #383d48;
+    border-radius:7px;
+    padding:10px;
+    resize:vertical;
+}
+
+.info{
+    color:#777;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.empty{
+    text-align:center;
+    color:#666;
+}
+
+@media(max-width:950px){
+
+    .layout{
+        grid-template-columns:1fr;
+    }
+
+    .left,
+    .right{
+        border:0;
+        border-bottom:1px solid #292d35;
+    }
+
+    .center{
+        min-height:500px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+<span>EXACT</span> TEXT EDITOR
+</div>
+
+<button class="export" onclick="downloadImage()">
+⬇ Save Image
+</button>
+
+</header>
+
+
+<div class="layout">
+
+
+<!-- LEFT -->
+
+<aside class="panel left">
+
+<div class="title">
+IMAGE
+</div>
+
+<label class="upload">
+
+<input
+type="file"
+id="imageInput"
+accept="image/*"
+>
+
+<div class="icon">🖼️</div>
+
+<div>
+Upload Image
+</div>
+
+<div style="font-size:11px;margin-top:5px">
+Only existing text will be detected
+</div>
+
+</label>
+
+
+<br>
+
+
+<div class="title">
+DETECT
+</div>
+
+<button
+class="tool"
+onclick="detectText()"
+>
+🔍 Detect Existing Text
+</button>
+
+
+<div
+class="progress"
+id="progress"
+>
+
+<div
+class="bar"
+id="bar"
+></div>
+
+</div>
+
+
+<div
+class="status"
+id="status"
+>
+Upload an image first.
+</div>
+
+
+<br>
+
+
+<div class="title">
+EDIT
+</div>
+
+<div class="info">
+
+صرف پہلے سے موجود Text کو edit کریں۔<br><br>
+
+نیا Text خود سے add نہیں ہوگا۔<br><br>
+
+Image کا باقی حصہ original رہے گا۔
+
+</div>
+
+</aside>
+
+
+
+<!-- CENTER -->
+
+<main class="center">
+
+<div
+class="empty"
+id="empty"
+>
+
+<div>
+
+<div style="font-size:55px">
+🖼️
+</div>
+
+<h2>
+Upload Image
+</h2>
+
+<p>
+Detect the existing text to edit it.
+</p>
+
+</div>
+
+</div>
+
+
+<div
+class="canvasBox"
+id="canvasBox"
+style="display:none"
+>
+
+<canvas id="canvas"></canvas>
+
+</div>
+
+</main>
+
+
+
+<!-- RIGHT -->
+
+<aside class="panel right">
+
+<div class="title">
+EXISTING TEXT
+</div>
+
+<div id="textList">
+
+<div class="info">
+No text detected.
+</div>
+
+</div>
+
+
+<div
+id="editor"
+style="display:none;margin-top:20px"
+>
+
+<div class="title">
+EDIT ONLY
+</div>
+
+<div class="info" style="margin-bottom:10px">
+
+Font / style / position کو manually change نہیں کیا جائے گا۔
+
+</div>
+
+
+<textarea
+id="newText"
+placeholder="Replace selected text..."
+></textarea>
+
+
+<button
+class="tool"
+onclick="applyChange()"
+>
+✓ Apply Text Change
+</button>
+
+
+<button
+class="tool"
+onclick="restoreOriginal()"
+>
+↩ Restore Original
+</button>
+
+</div>
+
+</aside>
+
+</div>
+
+
+
+<script>
+
+const canvas =
+document.getElementById("canvas");
+
+const ctx =
+canvas.getContext("2d");
+
+const imageInput =
+document.getElementById("imageInput");
+
+let img =
+new Image();
+
+let loaded=false;
+
+let detected=[];
+
+let selected=null;
+
+let originalImageData=null;
+
+
+/*
+IMAGE UPLOAD
+*/
+
+imageInput.addEventListener("change",e=>{
+
+    const file=e.target.files[0];
+
+    if(!file)return;
+
+    const reader=new FileReader();
+
+    reader.onload=function(ev){
+
+        img.onload=function(){
+
+            loaded=true;
+
+            canvas.width=img.naturalWidth;
+
+            canvas.height=img.naturalHeight;
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            originalImageData=
+                ctx.getImageData(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+            document.getElementById("empty")
+                .style.display="none";
+
+            document.getElementById("canvasBox")
+                .style.display="block";
+
+            detected=[];
+            selected=null;
+
+            updateList();
+
+            document.getElementById("status")
+                .innerText=
+                "Image loaded.";
+
+        };
+
+        img.src=ev.target.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
+/*
+OCR
+*/
+
+async function detectText(){
+
+    if(!loaded){
+
+        alert("Please upload an image first.");
+
+        return;
+    }
+
+    const progress=
+        document.getElementById("progress");
+
+    const bar=
+        document.getElementById("bar");
+
+    const status=
+        document.getElementById("status");
+
+    progress.style.display="block";
+
+    bar.style.width="0%";
+
+    status.innerText="Detecting text...";
+
+
+    try{
+
+        const result=
+            await Tesseract.recognize(
+                img.src,
+                "eng",
+                {
+                    logger:m=>{
+
+                        if(m.progress){
+
+                            bar.style.width=
+                                Math.round(
+                                    m.progress*100
+                                )+"%";
+
+                        }
+
+                        if(m.status){
+
+                            status.innerText=
+                                m.status;
+
+                        }
+
+                    }
+                }
+            );
+
+
+        detected=[];
+
+
+        /*
+        WORD LEVEL DETECTION
+        */
+
+        result.data.words.forEach(
+            (word,index)=>{
+
+                const value=
+                    word.text.trim();
+
+                if(!value)return;
+
+                if(
+                    !word.bbox ||
+                    word.confidence < 20
+                )return;
+
+
+                detected.push({
+
+                    id:index,
+
+                    original:value,
+
+                    text:value,
+
+                    x:word.bbox.x0,
+
+                    y:word.bbox.y0,
+
+                    w:
+                        word.bbox.x1 -
+                        word.bbox.x0,
+
+                    h:
+                        word.bbox.y1 -
+                        word.bbox.y0,
+
+                    changed:false
+
+                });
+
+            }
+        );
+
+
+        status.innerText=
+            detected.length+
+            " existing text items found.";
+
+        updateList();
+
+        redraw();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        status.innerText=
+            "Could not detect text.";
+
+    }
+
+}
+
+
+/*
+LIST
+*/
+
+function updateList(){
+
+    const list=
+        document.getElementById("textList");
+
+    list.innerHTML="";
+
+
+    if(!detected.length){
+
+        list.innerHTML=
+            '<div class="info">No text detected.</div>';
+
+        return;
+
+    }
+
+
+    detected.forEach(t=>{
+
+        const item=
+            document.createElement("div");
+
+        item.className="textItem";
+
+        if(t===selected)
+            item.classList.add("active");
+
+
+        item.innerHTML=
+            `<div class="preview">
+                ${escapeHTML(t.text)}
+            </div>
+
+            <div class="info">
+                Original: ${escapeHTML(t.original)}
+            </div>`;
+
+
+        item.onclick=function(){
+
+            selected=t;
+
+            document.getElementById("editor")
+                .style.display="block";
+
+            document.getElementById("newText")
+                .value=t.text;
+
+            updateList();
+
+            redraw();
+
+        };
+
+
+        list.appendChild(item);
+
+    });
+
+}
+
+
+/*
+APPLY ONLY TEXT
+*/
+
+function applyChange(){
+
+    if(!selected)
+        return;
+
+
+    const value=
+        document.getElementById("newText")
+            .value.trim();
+
+
+    if(!value)
+        return;
+
+
+    selected.text=value;
+
+    selected.changed=true;
+
+    redraw();
+
+    updateList();
+
+}
+
+
+/*
+RESTORE
+*/
+
+function restoreOriginal(){
+
+    if(!selected)
+        return;
+
+    selected.text=
+        selected.original;
+
+    selected.changed=false;
+
+    document.getElementById("newText")
+        .value=selected.original;
+
+    redraw();
+
+    updateList();
+
+}
+
+
+/*
+IMPORTANT:
+BACKGROUND RESTORATION
+
+Original pixels outside detected
+text boxes are kept untouched.
+*/
+
+function redraw(){
+
+    if(!loaded)return;
+
+
+    /*
+    Restore original image
+    */
+
+    ctx.putImageData(
+        originalImageData,
+        0,
+        0
+    );
+
+
+    detected.forEach(t=>{
+
+        /*
+        اگر text change نہیں ہوا
+        تو original pixels کو touch نہ کریں
+        */
+
+        if(
+            !t.changed ||
+            t.text===t.original
+        ){
+
+            return;
+
+        }
+
+
+        /*
+        Background reconstruction
+
+        detected box کے اندر
+        surrounding pixels سے
+        approximate background بنایا جاتا ہے.
+        */
+
+        reconstructBackground(t);
+
+
+        /*
+        Original approximate
+        text style
+        */
+
+        ctx.save();
+
+        const fontSize=
+            Math.max(
+                10,
+                Math.floor(t.h*0.85)
+            );
+
+
+        /*
+        OCR کے box کے حساب سے
+        font size برقرار رکھنے کی کوشش
+        */
+
+        ctx.font=
+            fontSize+
+            "px Arial";
+
+        ctx.textBaseline="top";
+
+        ctx.textAlign="left";
+
+
+        /*
+        Width fit
+        */
+
+        let size=fontSize;
+
+        ctx.font=
+            size+
+            "px Arial";
+
+
+        while(
+            ctx.measureText(t.text).width >
+            t.w &&
+            size>6
+        ){
+
+            size--;
+
+            ctx.font=
+                size+
+                "px Arial";
+
+        }
+
+
+        /*
+        Draw replacement
+        */
+
+        ctx.fillStyle=
+            estimateTextColor(t);
+
+
+        ctx.fillText(
+            t.text,
+            t.x,
+            t.y
+        );
+
+
+        ctx.restore();
+
+    });
+
+}
+
+
+/*
+BACKGROUND
+
+Only changed text rectangle is modified.
+*/
+
+function reconstructBackground(t){
+
+    const pad=2;
+
+    const x=
+        Math.max(
+            0,
+            Math.floor(t.x-pad)
+        );
+
+    const y=
+        Math.max(
+            0,
+            Math.floor(t.y-pad)
+        );
+
+    const w=
+        Math.min(
+            canvas.width-x,
+            Math.ceil(t.w+pad*2)
+        );
+
+    const h=
+        Math.min(
+            canvas.height-y,
+            Math.ceil(t.h+pad*2)
+        );
+
+
+    /*
+    Sample pixels around the text.
+    */
+
+    const top=
+        ctx.getImageData(
+            x,
+            Math.max(0,y-3),
+            w,
+            3
+        );
+
+    const bottom=
+        ctx.getImageData(
+            x,
+            Math.min(
+                canvas.height-3,
+                y+h
+            ),
+            w,
+            3
+        );
+
+
+    /*
+    Average background color
+    */
+
+    let r=0,g=0,b=0,count=0;
+
+
+    for(
+        let i=0;
+        i<top.data.length;
+        i+=4
+    ){
+
+        r+=top.data[i];
+        g+=top.data[i+1];
+        b+=top.data[i+2];
+
+        count++;
+
+    }
+
+
+    for(
+        let i=0;
+        i<bottom.data.length;
+        i+=4
+    ){
+
+        r+=bottom.data[i];
+        g+=bottom.data[i+1];
+        b+=bottom.data[i+2];
+
+        count++;
+
+    }
+
+
+    if(!count)return;
+
+
+    r=Math.round(r/count);
+    g=Math.round(g/count);
+    b=Math.round(b/count);
+
+
+    ctx.save();
+
+    ctx.fillStyle=
+        `rgb(${r},${g},${b})`;
+
+    ctx.fillRect(
+        x,
+        y,
+        w,
+        h
+    );
+
+    ctx.restore();
+
+}
+
+
+/*
+Estimate text color
+*/
+
+function estimateTextColor(t){
+
+    const data=
+        originalImageData.data;
+
+    let r=0;
+    let g=0;
+    let b=0;
+
+    let count=0;
+
+
+    /*
+    Sample darkest pixels
+    */
+
+    for(
+        let yy=Math.floor(t.y);
+        yy<
+        Math.min(
+            canvas.height,
+            Math.floor(t.y+t.h)
+        );
+        yy++
+    ){
+
+        for(
+            let xx=Math.floor(t.x);
+            xx<
+            Math.min(
+                canvas.width,
+                Math.floor(t.x+t.w)
+            );
+            xx++
+        ){
+
+            const index=
+                (yy*canvas.width+xx)*4;
+
+            const rr=data[index];
+            const gg=data[index+1];
+            const bb=data[index+2];
+
+
+            if(
+                rr<100 &&
+                gg<100 &&
+                bb<100
+            ){
+
+                r+=rr;
+                g+=gg;
+                b+=bb;
+
+                count++;
+
+            }
+
+        }
+
+    }
+
+
+    if(!count)
+        return "#ffffff";
+
+
+    return `rgb(
+        ${Math.round(r/count)},
+        ${Math.round(g/count)},
+        ${Math.round(b/count)}
+    )`;
+
+}
+
+
+/*
+DOWNLOAD
+*/
+
+function downloadImage(){
+
+    if(!loaded){
+
+        alert("Upload an image first.");
+
+        return;
+
+    }
+
+
+    const old=selected;
+
+    selected=null;
+
+    redraw();
+
+
+    const link=
+        document.createElement("a");
+
+    link.download=
+        "edited-image.png";
+
+    link.href=
+        canvas.toDataURL(
+            "image/png"
+        );
+
+    link.click();
+
+
+    selected=old;
+
+    redraw();
+
+}
+
+
+/*
+ESCAPE
+*/
+
+function escapeHTML(str){
+
+    return String(str)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;");
+
+}
+
+</script>
+
+</body>
+  </html>
